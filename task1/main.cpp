@@ -1,4 +1,6 @@
+#define _USE_MATH_DEFINES
 
+#include <math.h>
 #include <GLFW/glfw3.h>
 #include "delfem2/glfw/viewer2.h"
 #include "delfem2/color.h"
@@ -73,7 +75,7 @@ void simulate(
       p.pos[1] = -p.pos[1];
       p.velo[1] = -p.velo[1];
     }
-    if( p.pos[0] > 1 ){ // left wall
+    if( p.pos[0] > 1 ){ // right wall
       p.pos[0] = 2-p.pos[0];
       p.velo[0] = -p.velo[0];
     }
@@ -90,10 +92,10 @@ void simulate(
         float vnorm = p.velo[0]*norm[0] + p.velo[1]*norm[1]; // normal component of the velocity
         ////////////////////////////
         // write something below !
-//        p.velo[0] =
-//        p.velo[1] =
-//        p.pos[0] =
-//        p.pos[1] =
+        p.velo[0] = p.velo[0] - 2 * vnorm * norm[0]; // reflected vector = vector - 2* dot(vector,normal) * normal
+        p.velo[1] = p.velo[1] - 2 * vnorm * norm[1]; // reflected vector = vector - 2* dot(vector,normal) * normal
+        p.pos[0] = 0.5 + 0.2 * norm[0]; // center + radius * normal vector
+        p.pos[1] = 0.5 + 0.2 * norm[1]; // center + radius * normal vector
       }
     }
   }

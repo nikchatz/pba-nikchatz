@@ -36,7 +36,7 @@ $ git submodule update --init 3rd_party/delfem2
 
    
 
-=== Paste the screen shot here`![](<image file name>)` ===
+![task1_1](task1_1.png)
 
 
 
@@ -45,6 +45,6 @@ $ git submodule update --init 3rd_party/delfem2
 Modify `main.cpp` to collide points with the circular obstacle in the middle (see around 92th line of the code). Just 4 or 5 lines of codes need to be modifiled. We assume that the **coefficient of restitution** is one.
 
 
-=== Paste the screen shot here`![](<image file name>)`  ===
+![task1_2](task1_2.png)
 
 
