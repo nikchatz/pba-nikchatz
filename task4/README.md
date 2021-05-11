@@ -25,15 +25,14 @@ $ git submodule update --init 3rd_party/delfem2
 
 Compile the `main.cpp` using the `cmake` on the `CMakeLists.txt` . Run the program and take a screenshot image of the window appeared. Paste the screenshot image below.
 
-=== paste screenshot here ===
-
+![task4_1](task4_1.png)
 
 
 ## Problem 2
 
 Using the **Sort & Sweep Method**, implement the fast collision detection between the circles. Make the color of the collided circles  red. This can be done by setting `true` the `is_collided` member variable of the `CCircle` class. Implementation should be just adding 5 -10 lines of code around line #135 of `main.cpp`.  Use the function `is_collide()` at line #102. Take a screenshot image and paste it below. 
 
-=== paste screenshot here ===
+![task4_1](task4_2.png)
 
 
 
