@@ -55,11 +55,14 @@ DFM2_INLINE void WdWddW_Spring2(
     for(unsigned int jdim=0;jdim<ndim;++jdim) {
       // write some code below to compute the ddC.
       // ddC[ino][jno][ino][jno] means differentiation of C w.r.t. p[ino][idim] and then p[jno][jdim]
-
-//      ddC[0][0][idim][jdim] =
-//      ddC[0][1][idim][jdim] =
-//      ddC[1][0][idim][jdim] =
-//      ddC[1][1][idim][jdim] =
+        
+        if (jdim == idim)
+        {
+            ddC[0][0][idim][jdim] = 1;
+            ddC[0][1][idim][jdim] = -1;
+            ddC[1][0][idim][jdim] = -1;
+            ddC[1][1][idim][jdim] = 1;
+        }
     }
   }
   //
