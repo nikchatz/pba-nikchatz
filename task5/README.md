@@ -26,7 +26,7 @@ $ git submodule update --init 3rd_party/delfem2
 
 Build the `main.cpp` using `cmake`. Run the program and take a screenshot image of the window. You will probably see some **highly distorted** mesh and that's OK. Paste the screenshot image below by editing this mark down document:
 
-=== paste screenshot here ===
+![task5_1](task5_1.png)
 
 
 
@@ -46,7 +46,7 @@ The one-ring neighbourhood of vertices are stored inside `Psup_Ind` and `Psup` i
 
 Write some code around line #31 in the `main.cpp`. **Once the implementation is successful, the energy should steadly decrease.** Paste the resulting screenshot image below. 
 
-=== paste screenshot image here ===
+![task5_2](task5_2.png)
 
   
 
