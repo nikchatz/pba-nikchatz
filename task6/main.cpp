@@ -101,20 +101,32 @@ void Optimize(
         aP);
     G_sum += G;
     // making corff. matrix and rhs vector
-    // ---------------
-    // write some codes below
-    for(int idim=0;idim<2;++idim) {
-      for(int jdim=0;jdim<2;++jdim) {
-        matA(ip0 * 2 + idim, ip0 * 2 + jdim) += ddW[0][0][idim][jdim];
-        matA(ip0 * 2 + idim, ip1 * 2 + jdim) += ddW[0][1][idim][jdim];
-        matA(ip1 * 2 + idim, ip0 * 2 + jdim) += ddW[1][0][idim][jdim];
-        matA(ip1 * 2 + idim, ip1 * 2 + jdim) += ddW[1][1][idim][jdim];
-      }
-      vecB(ip0*2+idim) += dW[0][idim];
-      vecB(ip1*2+idim) += dW[1][idim];
-      // write something around here to put the areal constraint
-      // Note that the "np*2"-th DoF is for the Lagrange multiplier
+    // ---------------------------------
+    //   
+    //  A = |ddW-lambda*ddG   dG^T|
+    //      |      dG           0 |
+    // 
+    // b = |dW-lambda*dG|
+    //     |     G      |
+    // ---------------------------------
+    
+    for (int idim = 0; idim < 2; ++idim) {
+        for (int jdim = 0; jdim < 2; ++jdim) {
+            // top left block -> hessian of W - lambda * hessian of G
+            matA(ip0 * 2 + idim, ip0 * 2 + jdim) += ddW[0][0][idim][jdim] - lambda * ddG[0][0][idim][jdim];
+            matA(ip0 * 2 + idim, ip1 * 2 + jdim) += ddW[0][1][idim][jdim] - lambda * ddG[0][1][idim][jdim];
+            matA(ip1 * 2 + idim, ip0 * 2 + jdim) += ddW[1][0][idim][jdim] - lambda * ddG[1][0][idim][jdim];
+            matA(ip1 * 2 + idim, ip1 * 2 + jdim) += ddW[1][1][idim][jdim] - lambda * ddG[1][1][idim][jdim];
+        }
+        matA(np * 2, idim) -= dG[0][idim]; // bottom left block -> Jacobian of G
+        matA(idim, np * 2) -= dG[1][idim]; // top right block -> transpose Jacobian of G 
+
+        // top block ->  gradient of W - lambda * gradient of G
+        vecB(ip0 * 2 + idim) += dW[0][idim] - lambda * dG[0][idim];
+        vecB(ip1 * 2 + idim) += dW[1][idim] - lambda * dG[1][idim];
     }
+    matA(np * 2, np * 2) = 0; // bottom right block -> diff of G w.r.t. lambda is 0
+    vecB(np * 2) = G; // bottom block -> constraint G
   }
 
   // no further modification below
