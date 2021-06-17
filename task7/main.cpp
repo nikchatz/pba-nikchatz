@@ -67,10 +67,47 @@ void WdWddW_Rotation(
     const Eigen::Matrix3d& R)
 {
   const Eigen::Vector3d Rp = R*p;
+  Eigen::Matrix3d dR0 = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d dR1 = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d dR2 = Eigen::Matrix3d::Zero();
+
+  // create skew matrix component matrices for x1 (dR0),x2 (dR1),x3 (dR2)
+  // |0    -x3   x2|
+  // |x3    0   -x1|
+  // |-x2   x1    0|
+  dR0(1, 2) = -1; 
+  dR0(2, 1) = 1;
+  dR1(0, 2) = 1;
+  dR1(2, 0) = -1;
+  dR2(0, 1) = -1;
+  dR2(1, 0) = 1;
+
   W = (Rp-q).squaredNorm();
+
   // compute gradient and hessian of the energy below.
-  // dW =
-  // ddW =
+  
+  //gradient is derivative w.r.t rotation angle (angle is ||Rp-q||)
+  dW(0) = 2 * (Rp - q).dot(dR0 * Rp);
+  dW(1) = 2 * (Rp - q).dot(dR1 * Rp);
+  dW(2) = 2 * (Rp - q).dot(dR2 * Rp);
+  
+  //Skew matrix squared * vector
+  ddW(0, 0) = 0.5 * (Rp - q).dot(dR0 * dR0 * Rp);
+  ddW(0, 1) = 0.5 * (Rp - q).dot(dR0 * dR1 * Rp);
+  ddW(0, 2) = 0.5 * (Rp - q).dot(dR0 * dR2 * Rp);
+  ddW(1, 0) = 0.5 * (Rp - q).dot(dR1 * dR0 * Rp);
+  ddW(1, 1) = 0.5 * (Rp - q).dot(dR1 * dR1 * Rp);
+  ddW(1, 2) = 0.5 * (Rp - q).dot(dR1 * dR2 * Rp);
+  ddW(2, 0) = 0.5 * (Rp - q).dot(dR2 * dR0 * Rp);
+  ddW(2, 1) = 0.5 * (Rp - q).dot(dR2 * dR1 * Rp);
+  ddW(2, 2) = 0.5 * (Rp - q).dot(dR2 * dR2 * Rp);
+
+  //Alternative - not sure why this works.. maybe because derivative of exp is itself?
+  //for (int i = 0; i < 2; ++i) {
+  //    for (int j = 0; j < 2; ++j) {
+  //        ddW(i, j) = dW(j);
+  //    }
+  //}
 }
 
 /**

@@ -30,7 +30,7 @@ $ git submodule update --init 3rd_party/delfem2
 
 Build the `main.cpp` using `cmake`. Run the program and take a screenshot image of the window.  Paste the screenshot image below by editing this mark down document:
 
-=== paste screenshot here ===
+![task7_1](task7_1.png)
 
 
 
@@ -51,13 +51,13 @@ The following slides **may be** useful for this assignments:
 
 Report the energy after convergence: 
 
-- converged energy = ?????
+- converged energy = 100
 
 
 
 Paste the resulting screenshot image below:
 
-=== paste screenshot image here ===
+![task7_2](task7_2.png)
 
   
 
