@@ -144,13 +144,15 @@ void AnimationByEnergyMinimization(
   }
   // adding gradient of gravitational potential energy (hessian is zero for gravity energy)
   for(unsigned int ip=0;ip<np;++ip) {
-    gradW(ip*2+0) -= mass_point*gravity[0];
-    gradW(ip*2+1) -= mass_point*gravity[1];
+    // gradient is potential energy - M/dt*dt * (Xi - tempXi)
+    gradW(ip*2+0) -= mass_point*gravity[0] - mass_point / (dt * dt) * (aXY[ip * 2 + 0] - aXYt[ip * 2 + 0]);
+    gradW(ip*2+1) -= mass_point*gravity[1] - mass_point / (dt * dt) * (aXY[ip * 2 + 1] - aXYt[ip * 2 + 1]);
   }
   // add the inertia effect below
   for(unsigned int i=0;i<nDof;++i){
-  // hessW(i,i) +=
+   hessW(i,i) += mass_point/(dt*dt); // hessian iss diagonal M/dt*dt and M is mass_point
   }
+  
   // adding boundary condition
   for(unsigned int i=0;i<nDof;++i){
     if( aBCFlag[i] == 0 ){ continue; } // if this DoF is free, skip
@@ -164,10 +166,10 @@ void AnimationByEnergyMinimization(
   Eigen::VectorXd update = lu.solve(gradW); // solve matrix
   // modify velocity and position update below.
   for(unsigned int i=0;i<nDof;++i){
-//    aUV[i] =
+    aUV[i] = -update(i) / dt; // velocity is (Xi+1 - Xi)/dt -> (aXY[i]-update(i)-aXY[i]) / dt
     aXY[i] = aXY[i]-update(i);
   }
-
+  
 }
 
 void SettingUpSimulation(
