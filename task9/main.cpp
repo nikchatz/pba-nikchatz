@@ -145,7 +145,7 @@ int main()
             BA += am[i] * (ap[i] - t_0) * (aq[i] - t_1).transpose();
         }
 
-        // Calculate R_opt with JacobiSVD
+        // Calculate R_opt with JacobiSVD and t_opt
         Eigen::JacobiSVD< Eigen::MatrixXf> svd(BA, Eigen::ComputeFullU | Eigen::ComputeFullV);
         Eigen::MatrixXf U = svd.matrixU();
         Eigen::MatrixXf V = svd.matrixV();
