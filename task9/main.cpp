@@ -121,9 +121,34 @@ int main()
             aMass[aQuad[iq*4+2]],
             aMass[aQuad[iq*4+3]] };
         // write some code below to rigidly transform the points in the rest shape (`aq`) such that the
-        // weighted sum of squared distances against the points in the tentative shape (`qp`) is minimized (`am` is the weight).
+        // weighted sum of squared distances against the points in the tentative shape (`ap`) is minimized (`am` is the weight).
 
+        //calculate R ???
+        Eigen::Matrix2f R = Eigen::Matrix2f::Zero();
 
+        // Calculate sum of mass points
+        float m_sum = am[0] + am[1] + am[2] + am[3];
+
+        // Calculate t_opt -> (am*ap)/m_sum - R * (am*aq)/m_sum
+        Eigen::Vector2f t_opt[4] = {
+            (am[0] * ap[0]) / m_sum - R * ((am[0] * aq[0]) / m_sum) ,
+            (am[1] * ap[1]) / m_sum - R * ((am[1] * aq[1]) / m_sum) ,
+            (am[2] * ap[2]) / m_sum - R * ((am[2] * aq[2]) / m_sum) ,
+            (am[3] * ap[3]) / m_sum - R * ((am[3] * aq[3]) / m_sum) };
+
+        // Calculate R_opt with JacobiSVD
+        Eigen::JacobiSVD< Eigen::MatrixXf> svd(R, Eigen::ComputeFullU | Eigen::ComputeFullV);
+        Eigen::MatrixXf U = svd.matrixU();
+        Eigen::MatrixXf V = svd.matrixV();
+        Eigen::Matrix2f R_opt = U * V.transpose();
+
+        // Update position -> x_i = R_opt * Xi + t_opt;
+        // but ap[] is constant and can't be updated.. so maybe update aXYt??
+           //ap[0] = R_opt * aq[0] + t_opt[0];
+           //ap[1] = R_opt * aq[1] + t_opt[1];
+           //ap[2] = R_opt * aq[2] + t_opt[2];
+           //ap[3] = R_opt * aq[3] + t_opt[3];
+        
         // no edits further down
       }
       for(unsigned int ixy=0;ixy<aXY.size()/2;++ixy) { // update position and velocities
