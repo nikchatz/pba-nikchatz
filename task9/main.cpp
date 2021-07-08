@@ -123,31 +123,42 @@ int main()
         // write some code below to rigidly transform the points in the rest shape (`aq`) such that the
         // weighted sum of squared distances against the points in the tentative shape (`ap`) is minimized (`am` is the weight).
 
-        //calculate R ???
-        Eigen::Matrix2f R = Eigen::Matrix2f::Zero();
+        //Initialize transform vectors and BA Matrix
+        Eigen::Vector2f t_0 = Eigen::Vector2f::Zero();
+        Eigen::Vector2f t_1 = Eigen::Vector2f::Zero();
+        Eigen::Matrix2f BA = Eigen::Matrix2f::Zero();
+        
 
         // Calculate sum of mass points
         float m_sum = am[0] + am[1] + am[2] + am[3];
 
-        // Calculate t_opt -> (am*ap)/m_sum - R * (am*aq)/m_sum
-        Eigen::Vector2f t_opt[4] = {
-            (am[0] * ap[0]) / m_sum - R * ((am[0] * aq[0]) / m_sum) ,
-            (am[1] * ap[1]) / m_sum - R * ((am[1] * aq[1]) / m_sum) ,
-            (am[2] * ap[2]) / m_sum - R * ((am[2] * aq[2]) / m_sum) ,
-            (am[3] * ap[3]) / m_sum - R * ((am[3] * aq[3]) / m_sum) };
+        // Calculate transform vectors
+        for (auto i = 0; i < 4; i++)
+        {
+            t_0 += (am[i] * ap[i]) / m_sum;
+            t_1 += (am[i] * aq[i]) / m_sum;
+        }
+
+        // Calculate BA^t matrix
+        for (auto i = 0; i < 4; i++)
+        {
+            BA += am[i] * (ap[i] - t_0) * (aq[i] - t_1).transpose();
+        }
 
         // Calculate R_opt with JacobiSVD
-        Eigen::JacobiSVD< Eigen::MatrixXf> svd(R, Eigen::ComputeFullU | Eigen::ComputeFullV);
+        Eigen::JacobiSVD< Eigen::MatrixXf> svd(BA, Eigen::ComputeFullU | Eigen::ComputeFullV);
         Eigen::MatrixXf U = svd.matrixU();
         Eigen::MatrixXf V = svd.matrixV();
         Eigen::Matrix2f R_opt = U * V.transpose();
+        Eigen::Vector2f t_opt = t_0 - R_opt * t_1;
 
         // Update position -> x_i = R_opt * Xi + t_opt;
-        // but ap[] is constant and can't be updated.. so maybe update aXYt??
-           //ap[0] = R_opt * aq[0] + t_opt[0];
-           //ap[1] = R_opt * aq[1] + t_opt[1];
-           //ap[2] = R_opt * aq[2] + t_opt[2];
-           //ap[3] = R_opt * aq[3] + t_opt[3];
+        for (auto i = 0; i < 4; i++)
+        {
+            Eigen::Vector2f update = R_opt * aq[i] + t_opt;
+            aXYt[aQuad[iq * 4 + i] * 2 + 0] = update[0];
+            aXYt[aQuad[iq * 4 + i] * 2 + 1] = update[1];
+        }
         
         // no edits further down
       }
